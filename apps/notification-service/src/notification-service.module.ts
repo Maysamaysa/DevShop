@@ -1,18 +1,48 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseModule } from '@app/database';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { NotificationServiceController } from './notification-service.controller';
-import { NotificationServiceService } from './notification-service.service';
+import { BullModule } from '@nestjs/bullmq';
+import { JwtModule } from '@nestjs/jwt';
+import { NotificationController } from './notification-service.controller';
+import { NotificationService } from './notification-service.service';
 import { Notification } from './entities/notification.entity';
+import { WsAuthService } from './ws-auth.service';
+import { NotificationGateway } from './notification.gateway';
+import { EmailProcessor } from './email.processor';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
     TypeOrmModule.forFeature([Notification]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET', 'default_secret_key'),
+      }),
+      inject: [ConfigService],
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        connection: {
+          host: configService.get('REDIS_HOST', 'localhost'),
+          port: configService.get('REDIS_PORT', 6379),
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    BullModule.registerQueue({
+      name: 'email-queue',
+    }),
   ],
-  controllers: [NotificationServiceController],
-  providers: [NotificationServiceService],
+  controllers: [NotificationController],
+  providers: [
+    NotificationService,
+    WsAuthService,
+    NotificationGateway,
+    EmailProcessor,
+  ],
 })
 export class NotificationServiceModule {}

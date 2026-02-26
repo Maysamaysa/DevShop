@@ -23,7 +23,7 @@ export class AuthService {
     private refreshTokenRepository: Repository<RefreshToken>,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   async register(registerDto: RegisterDto) {
     const existingUser = await this.userRepository.findOne({
@@ -129,9 +129,9 @@ export class AuthService {
     });
 
     const refreshTokenEntity = this.refreshTokenRepository.create({
-      token: refreshTokenString as string,
-      expiresAt: expiresAt as Date,
-      user: user as User,
+      token: refreshTokenString,
+      expiresAt: expiresAt,
+      user: user,
     });
 
     await this.refreshTokenRepository.save(refreshTokenEntity);

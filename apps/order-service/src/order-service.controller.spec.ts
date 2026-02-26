@@ -1,24 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OrderServiceController } from './order-service.controller';
-import { OrderServiceService } from './order-service.service';
+import { OrderController } from './order-service.controller';
+import { OrderService } from './order-service.service';
+import { OrderStatus } from './entities/order.entity';
 
-describe('OrderServiceController', () => {
-  let orderServiceController: OrderServiceController;
+describe('OrderController', () => {
+  let controller: OrderController;
+
+  const mockOrderService = {
+    create: jest.fn((userId: string, dto: Record<string, unknown>) =>
+      Promise.resolve({ id: '1', userId, ...dto }),
+    ),
+    findAll: jest.fn(() =>
+      Promise.resolve({ data: [], total: 0, page: 1, limit: 10 }),
+    ),
+    findOne: jest.fn((id: string) =>
+      Promise.resolve({ id, status: OrderStatus.PENDING }),
+    ),
+    updateStatus: jest.fn((id: string, dto: Record<string, unknown>) =>
+      Promise.resolve({ id, ...dto }),
+    ),
+    softDelete: jest.fn(() => Promise.resolve()),
+  };
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
-      controllers: [OrderServiceController],
-      providers: [OrderServiceService],
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [OrderController],
+      providers: [{ provide: OrderService, useValue: mockOrderService }],
     }).compile();
 
-    orderServiceController = app.get<OrderServiceController>(
-      OrderServiceController,
-    );
+    controller = module.get<OrderController>(OrderController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(orderServiceController.getHello()).toBe('Hello World!');
-    });
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
   });
 });

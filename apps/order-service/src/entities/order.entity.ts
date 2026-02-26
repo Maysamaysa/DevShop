@@ -1,4 +1,4 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, DeleteDateColumn } from 'typeorm';
 import { BaseEntity } from '@app/database';
 
 export enum OrderStatus {
@@ -19,4 +19,7 @@ export class Order extends BaseEntity {
 
   @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.PENDING })
   status: OrderStatus;
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 }
