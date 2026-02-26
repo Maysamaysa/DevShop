@@ -1,9 +1,14 @@
 import { NestFactory } from '@nestjs/core';
+import './tracing';
+import { getWinstonConfig } from '@app/common';
+
 import { ApiGatewayModule } from './api-gateway.module';
 import * as morgan from 'morgan';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ApiGatewayModule);
+  const app = await NestFactory.create(ApiGatewayModule, {
+    logger: getWinstonConfig('api-gateway'),
+  });
 
   // Setup Request Logging
   app.use(morgan('combined'));

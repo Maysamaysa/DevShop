@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseModule } from '@app/database';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,9 +11,14 @@ import { RefreshToken } from './entities/refresh-token.entity';
 import { JwtStrategy } from '@app/common';
 import { AppController } from './app.controller';
 import { TerminusModule } from '@nestjs/terminus';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { MetricsModule } from './metrics/metrics.module';
+import { MetricsMiddleware } from './metrics/metrics.middleware';
 
 @Module({
   imports: [
+    MetricsModule,
+    PrometheusModule.register(),
     TerminusModule,
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
@@ -31,4 +36,8 @@ import { TerminusModule } from '@nestjs/terminus';
   controllers: [AuthController, AppController],
   providers: [AuthService, JwtStrategy],
 })
-export class AuthServiceModule {}
+export class AuthServiceModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(MetricsMiddleware).forRoutes('*');
+  }
+}

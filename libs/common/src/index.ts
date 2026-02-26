@@ -4,3 +4,7 @@ export * from './guards/roles.guard';
 export * from './strategies/jwt.strategy';
 export * from './redis/redis-pubsub.module';
 export * from './health/health.module';
+export * from './tracing/tracing';
+export * from './logger/logger';
+export * from './metrics/metrics.module';
+export * from './metrics/metrics.middleware';

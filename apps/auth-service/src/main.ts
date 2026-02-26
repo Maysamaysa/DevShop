@@ -1,10 +1,15 @@
 import { NestFactory } from '@nestjs/core';
+import './tracing';
+import { getWinstonConfig } from '@app/common';
+
 import { AuthServiceModule } from './auth-service.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AuthServiceModule);
+  const app = await NestFactory.create(AuthServiceModule, {
+    logger: getWinstonConfig('auth-service'),
+  });
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 

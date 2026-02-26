@@ -1,10 +1,15 @@
 import { NestFactory } from '@nestjs/core';
+import './tracing';
+import { getWinstonConfig } from '@app/common';
+
 import { NotificationServiceModule } from './notification-service.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(NotificationServiceModule);
+  const app = await NestFactory.create(NotificationServiceModule, {
+    logger: getWinstonConfig('notification-service'),
+  });
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
