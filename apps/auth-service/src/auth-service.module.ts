@@ -9,9 +9,12 @@ import { AuthService } from './auth-service.service';
 import { User } from './entities/user.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { JwtStrategy } from '@app/common';
+import { AppController } from './app.controller';
+import { TerminusModule } from '@nestjs/terminus';
 
 @Module({
   imports: [
+    TerminusModule,
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
     TypeOrmModule.forFeature([User, RefreshToken]),
@@ -25,7 +28,7 @@ import { JwtStrategy } from '@app/common';
       inject: [ConfigService],
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, AppController],
   providers: [AuthService, JwtStrategy],
 })
 export class AuthServiceModule {}

@@ -5,9 +5,12 @@ import { APP_GUARD } from '@nestjs/core';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ApiGatewayController } from './api-gateway.controller';
 import { ApiGatewayService } from './api-gateway.service';
+import { AppController } from './app.controller';
+import { TerminusModule } from '@nestjs/terminus';
 
 @Module({
   imports: [
+    TerminusModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot([
       {
@@ -16,7 +19,7 @@ import { ApiGatewayService } from './api-gateway.service';
       },
     ]),
   ],
-  controllers: [ApiGatewayController],
+  controllers: [ApiGatewayController, AppController],
   providers: [
     ApiGatewayService,
     {
@@ -26,7 +29,7 @@ import { ApiGatewayService } from './api-gateway.service';
   ],
 })
 export class ApiGatewayModule implements NestModule {
-  constructor(private readonly configService: ConfigService) { }
+  constructor(private readonly configService: ConfigService) {}
 
   configure(consumer: MiddlewareConsumer) {
     // Proxy Auth Service

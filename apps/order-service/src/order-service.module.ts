@@ -6,15 +6,18 @@ import { OrderController } from './order-service.controller';
 import { OrderService } from './order-service.service';
 import { Order } from './entities/order.entity';
 import { RedisPubSubModule } from '@app/common';
+import { AppController } from './app.controller';
+import { TerminusModule } from '@nestjs/terminus';
 
 @Module({
   imports: [
+    TerminusModule,
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
     TypeOrmModule.forFeature([Order]),
     RedisPubSubModule, // To allow publishing events
   ],
-  controllers: [OrderController],
+  controllers: [OrderController, AppController],
   providers: [OrderService],
 })
 export class OrderServiceModule {}

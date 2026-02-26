@@ -10,9 +10,12 @@ import { Notification } from './entities/notification.entity';
 import { WsAuthService } from './ws-auth.service';
 import { NotificationGateway } from './notification.gateway';
 import { EmailProcessor } from './email.processor';
+import { AppController } from './app.controller';
+import { TerminusModule } from '@nestjs/terminus';
 
 @Module({
   imports: [
+    TerminusModule,
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
     TypeOrmModule.forFeature([Notification]),
@@ -37,7 +40,7 @@ import { EmailProcessor } from './email.processor';
       name: 'email-queue',
     }),
   ],
-  controllers: [NotificationController],
+  controllers: [NotificationController, AppController],
   providers: [
     NotificationService,
     WsAuthService,
