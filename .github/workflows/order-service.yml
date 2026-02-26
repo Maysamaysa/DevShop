@@ -1,0 +1,66 @@
+name: Order Service Deployment
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'apps/order-service/**'
+      - 'libs/**'
+      - 'Dockerfile'
+      - '.github/workflows/order-service.yml'
+
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: devshop-order-service
+  APP_NAME: order-service
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=sha
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }},${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          APP_NAME=${{ env.APP_NAME }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Helm
+      uses: azure/setup-helm@v4.2.0
+    
+    - name: Deploy Order Service Chart
+      run: |
+        echo "Simulating Helm upgrade for Order Service..."
+        # helm upgrade --install order-service ./helm/order-service \
+        #   --namespace devshop --create-namespace \
+        #   --set image.tag=sha-${GITHUB_SHA::7}
