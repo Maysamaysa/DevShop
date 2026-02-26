@@ -3,21 +3,21 @@ import { BaseEntity } from '@app/database';
 import { RefreshToken } from './refresh-token.entity';
 
 export enum UserRole {
-    USER = 'user',
-    ADMIN = 'admin',
+  USER = 'user',
+  ADMIN = 'admin',
 }
 
 @Entity('users')
 export class User extends BaseEntity {
-    @Column({ unique: true })
-    email: string;
+  @Column({ unique: true })
+  email: string;
 
-    @Column()
-    passwordHash: string;
+  @Column()
+  passwordHash: string;
 
-    @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
-    role: UserRole;
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  role: UserRole;
 
-    @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
-    refreshTokens: RefreshToken[];
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
+  refreshTokens: RefreshToken[];
 }

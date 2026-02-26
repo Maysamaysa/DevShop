@@ -10,9 +10,9 @@ import { Order } from './entities/order.entity';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
-    TypeOrmModule.forFeature([Order])
+    TypeOrmModule.forFeature([Order]),
   ],
   controllers: [OrderServiceController],
   providers: [OrderServiceService],
 })
-export class OrderServiceModule { }
+export class OrderServiceModule {}

@@ -1,24 +1,40 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthServiceController } from './auth-service.controller';
-import { AuthServiceService } from './auth-service.service';
+import { AuthController } from './auth-service.controller';
+import { AuthService } from './auth-service.service';
 
-describe('AuthServiceController', () => {
-  let authServiceController: AuthServiceController;
+describe('AuthController', () => {
+  let authController: AuthController;
+
+  const mockAuthService = {
+    register: jest.fn(() =>
+      Promise.resolve({ id: '1', email: 'test@example.com' }),
+    ),
+    login: jest.fn(() =>
+      Promise.resolve({ accessToken: 'acc_token', refreshToken: 'ref_token' }),
+    ),
+    refresh: jest.fn(() =>
+      Promise.resolve({
+        accessToken: 'new_acc_token',
+        refreshToken: 'new_ref_token',
+      }),
+    ),
+    logout: jest.fn(() =>
+      Promise.resolve({ message: 'Logged out successfully' }),
+    ),
+  };
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
-      controllers: [AuthServiceController],
-      providers: [AuthServiceService],
+      controllers: [AuthController],
+      providers: [{ provide: AuthService, useValue: mockAuthService }],
     }).compile();
 
-    authServiceController = app.get<AuthServiceController>(
-      AuthServiceController,
-    );
+    authController = app.get<AuthController>(AuthController);
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(authServiceController.getHello()).toBe('Hello World!');
+    it('should be defined', () => {
+      expect(authController).toBeDefined();
     });
   });
 });

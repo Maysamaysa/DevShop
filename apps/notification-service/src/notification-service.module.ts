@@ -15,4 +15,4 @@ import { Notification } from './entities/notification.entity';
   controllers: [NotificationServiceController],
   providers: [NotificationServiceService],
 })
-export class NotificationServiceModule { }
+export class NotificationServiceModule {}
