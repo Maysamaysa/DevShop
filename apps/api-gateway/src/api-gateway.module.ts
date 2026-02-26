@@ -1,5 +1,5 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { createProxyMiddleware } from 'http-proxy-middleware';
@@ -26,12 +26,17 @@ import { ApiGatewayService } from './api-gateway.service';
   ],
 })
 export class ApiGatewayModule implements NestModule {
+  constructor(private readonly configService: ConfigService) { }
+
   configure(consumer: MiddlewareConsumer) {
     // Proxy Auth Service
     consumer
       .apply(
         createProxyMiddleware({
-          target: 'http://localhost:3001',
+          target: this.configService.get(
+            'AUTH_SERVICE_URL',
+            'http://localhost:3001',
+          ),
           changeOrigin: true,
           pathRewrite: {
             '^/api/auth': '',
@@ -44,7 +49,10 @@ export class ApiGatewayModule implements NestModule {
     consumer
       .apply(
         createProxyMiddleware({
-          target: 'http://localhost:3002',
+          target: this.configService.get(
+            'ORDER_SERVICE_URL',
+            'http://localhost:3002',
+          ),
           changeOrigin: true,
           pathRewrite: {
             '^/api/orders': '',
@@ -57,7 +65,10 @@ export class ApiGatewayModule implements NestModule {
     consumer
       .apply(
         createProxyMiddleware({
-          target: 'http://localhost:3003',
+          target: this.configService.get(
+            'NOTIFICATION_SERVICE_URL',
+            'http://localhost:3003',
+          ),
           changeOrigin: true,
           pathRewrite: {
             '^/api/notifications': '',
