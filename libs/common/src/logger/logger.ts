@@ -22,7 +22,7 @@ export const getWinstonConfig = (appName: string) => {
         ),
       }),
       new WinstonLoki({
-        host: process.env.LOKI_HOST || 'http://localhost:3100',
+        host: process.env.LOKI_HOST || 'http://loki:3100',
         labels: { app: appName },
         json: true,
         format: winston.format.json(),
@@ -33,4 +33,4 @@ export const getWinstonConfig = (appName: string) => {
 };
 
 @Module({})
-export class AppLoggerModule {}
+export class AppLoggerModule { }

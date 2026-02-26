@@ -6,7 +6,8 @@ import { resourceFromAttributes } from '@opentelemetry/resources';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 
 const exporterOptions = {
-  endpoint: process.env.JAEGER_ENDPOINT || 'http://localhost:14268/api/traces',
+  // Use 'jaeger' DNS name for Docker networking
+  endpoint: process.env.JAEGER_ENDPOINT || 'http://jaeger:14268/api/traces',
 };
 
 const traceExporter = new JaegerExporter(exporterOptions);
