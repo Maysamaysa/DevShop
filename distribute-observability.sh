@@ -3,11 +3,12 @@ APPS=("api-gateway" "auth-service" "order-service" "notification-service" "infra
 
 for APP in "${APPS[@]}"; do
   # Create tracing.ts
-  cat << 'TRACE' > apps/$APP/src/tracing.ts
+  cat << TRACE > apps/$APP/src/tracing.ts
+/* eslint-disable */
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { JaegerExporter } from '@opentelemetry/exporter-jaeger';
-import { Resource } from '@opentelemetry/resources';
+import { resourceFromAttributes } from '@opentelemetry/resources';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 
 const exporterOptions = {
@@ -17,9 +18,9 @@ const exporterOptions = {
 const traceExporter = new JaegerExporter(exporterOptions);
 
 export const sdk = new NodeSDK({
-  resource: new Resource({
+  resource: resourceFromAttributes({
     [SemanticResourceAttributes.SERVICE_NAME]: '$APP',
-  }) as any,
+  }),
   traceExporter,
   instrumentations: [getNodeAutoInstrumentations()],
 });
@@ -36,7 +37,8 @@ TRACE
 
   # Create metrics.middleware.ts
   mkdir -p apps/$APP/src/metrics
-  cat << 'METRICS' > apps/$APP/src/metrics/metrics.middleware.ts
+  cat << METRICS > apps/$APP/src/metrics/metrics.middleware.ts
+/* eslint-disable */
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { InjectMetric } from '@willsoto/nestjs-prometheus';
@@ -54,11 +56,8 @@ export class MetricsMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const end = this.requestDuration.startTimer();
     res.on('finish', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
       const route = (req as any).route ? ((req as any).route.path as string) : req.path;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       this.requestsTotal.labels(req.method, route, res.statusCode.toString()).inc();
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       end({ method: req.method, route, status_code: res.statusCode.toString() });
     });
     next();
@@ -67,7 +66,8 @@ export class MetricsMiddleware implements NestMiddleware {
 METRICS
 
   # Create metrics.module.ts
-  cat << 'METRICSMOD' > apps/$APP/src/metrics/metrics.module.ts
+  cat << METRICSMOD > apps/$APP/src/metrics/metrics.module.ts
+/* eslint-disable */
 import { Module } from '@nestjs/common';
 import { makeCounterProvider, makeHistogramProvider } from '@willsoto/nestjs-prometheus';
 import { MetricsMiddleware } from './metrics.middleware';

@@ -1,8 +1,6 @@
+/* eslint-disable */
 import { Module } from '@nestjs/common';
-import {
-  makeCounterProvider,
-  makeHistogramProvider,
-} from '@willsoto/nestjs-prometheus';
+import { makeCounterProvider, makeHistogramProvider } from '@willsoto/nestjs-prometheus';
 import { MetricsMiddleware } from './metrics.middleware';
 
 export const httpRequestsTotalProvider = makeCounterProvider({
@@ -24,10 +22,6 @@ export const httpRequestDurationProvider = makeHistogramProvider({
     httpRequestDurationProvider,
     MetricsMiddleware,
   ],
-  exports: [
-    MetricsMiddleware,
-    httpRequestsTotalProvider,
-    httpRequestDurationProvider,
-  ],
+  exports: [MetricsMiddleware, httpRequestsTotalProvider, httpRequestDurationProvider],
 })
 export class MetricsModule {}

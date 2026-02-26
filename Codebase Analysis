@@ -1,0 +1,82 @@
+# DevShop Codebase Analysis
+
+## Architecture Overview
+
+DevShop is a microservices-based platform built with **NestJS**. It follows an event-driven architecture using **Redis Pub/Sub** for inter-service communication and **BullMQ** for asynchronous job processing.
+
+### System Diagram (Conceptual)
+```mermaid
+graph TD
+    Client[Client/Browser] --> GW[API Gateway]
+    GW --> Auth[Auth Service]
+    GW --> Order[Order Service]
+    GW --> Notif[Notification Service]
+    
+    Order -- "Publishes 'order_events'" --> Redis[(Redis)]
+    Redis -- "Subscribes" --> Notif
+    
+    Notif -- "Queues Emails" --> BullMQ[BullMQ/Redis]
+    BullMQ --> EmailProc[Email Processor]
+    
+    Notif -- "Real-time" --> WS[WebSockets] --> Client
+    
+    Auth -- "DB" --> PG[(PostgreSQL)]
+    Order -- "DB" --> PG
+    Notif -- "DB" --> PG
+```
+
+## Core Components
+
+### 1. Services (`apps/`)
+- **api-gateway**: The entry point for all external requests. It uses `http-proxy-middleware` to route traffic to internal services. It also handles rate limiting (`Throttler`) and health checks.
+- **auth-service**: Manages user registration, authentication (JWT Access/Refresh tokens), and Role-Based Access Control (RBAC).
+- **order-service**: Handles order lifecycle. When an order is created or updated, it publishes events to a Redis channel called `order_events`.
+- **notification-service**: Centrally handles all communication with users.
+    - Subscribes to `order_events` from Redis.
+    - Saves notifications to the database.
+    - Pushes real-time updates via **Socket.io**.
+    - Dispatches email sending tasks to a **BullMQ** queue.
+- **infra-service**: A service likely intended for infrastructure-related tasks or health monitoring (needs more specific business context but appears as a standard service in the monorepo).
+
+### 2. Shared Libraries (`libs/`)
+- **common**: Contains shared code used across all services:
+    - **Guards**: `JwtAuthGuard`, `RolesGuard`.
+    - **Decorators**: `@Roles`.
+    - **Observability**: Centralized Winston logger and Prometheus metrics middleware.
+    - **Health**: Standardized health check modules.
+- **database**: Centralized TypeORM configuration.
+    - Uses a dynamic entity discovery pattern: `../../../apps/**/src/**/*.entity{.ts,.js}`.
+    - Manages database migrations.
+
+## Technical Stack
+
+- **Framework**: NestJS (Monorepo)
+- **Database**: PostgreSQL (TypeORM)
+- **Cache/Messaging**: Redis (Pub/Sub & BullMQ)
+- **Security**: Passport.io, JWT (Access & Refresh), Bcrypt
+- **API Documentation**: Swagger (OpenAPI)
+- **Real-time**: Socket.io (WebSockets)
+
+## Observability & Monitoring
+
+The project has a robust observability stack integrated into every service:
+- **Tracing**: OpenTelemetry with Jaeger/OTLP export.
+- **Logging**: Winston logger with Loki transport.
+- **Metrics**: Prometheus client (`prom-client`) with custom middleware for request tracking.
+- **Visualization**: Grafana (pre-configured to connect to Prometheus and Loki).
+
+## Infrastructure & Deployment
+
+- **Local Development**: `docker-compose.yml` sets up the entire stack including Postgres, Redis, Prometheus, Grafana, Loki, and all microservices.
+- **Cloud/Orchestration**: 
+    - **Helm**: Charts are available for all services under the `helm/` directory.
+    - **Terraform**: Located in `infrastructure/terraform/`, likely used for provisioning cloud resources (e.g., AWS/GCP).
+- **CI/CD**: GitHub Actions (found in `.github/`) for automated workflows.
+
+## Key Design Patterns Observed
+
+1.  **API Gateway Pattern**: Centralized routing and cross-cutting concerns (rate limiting, auth check).
+2.  **Event-Driven Architecture**: Decoupling services (Order -> Notification) via Redis Pub/Sub.
+3.  **Sidecar/Initialization**: Each service has a `tracing.ts` initialized at the entry point for OTel.
+4.  **Database-per-Service (Partial)**: While services share a Postgres instance in Docker Compose, they maintain their own entities and logic.
+5.  **Repository Pattern**: Standard NestJS/TypeORM pattern for data access.
