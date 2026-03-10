@@ -3,7 +3,7 @@ import './tracing';
 import { getWinstonConfig } from '@app/common';
 
 import { ApiGatewayModule } from './api-gateway.module';
-import * as morgan from 'morgan';
+import morgan from 'morgan';
 
 async function bootstrap() {
   const app = await NestFactory.create(ApiGatewayModule, {

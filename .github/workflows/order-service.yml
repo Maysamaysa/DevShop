@@ -8,6 +8,7 @@ on:
       - 'libs/**'
       - 'Dockerfile'
       - '.github/workflows/order-service.yml'
+  workflow_dispatch:
 
 env:
   REGISTRY: docker.io

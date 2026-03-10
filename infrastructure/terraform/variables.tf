@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "The AWS region"
   type        = string
-  default     = "us-east-1"
+  default     = "ap-southeast-2"
 }
 
 variable "cluster_name" {
@@ -14,6 +14,7 @@ variable "db_password" {
   description = "Password for the RDS master user"
   type        = string
   sensitive   = true
+  default     = "Devshop123!"
 }
 
 variable "db_username" {

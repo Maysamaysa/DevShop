@@ -29,10 +29,10 @@ resource "aws_security_group" "rds_sg" {
 
 resource "aws_db_instance" "devshop_postgres" {
   identifier             = "devshop-postgres"
-  instance_class         = "db.t3.micro"
+  instance_class         = "db.t2.micro"
   allocated_storage      = 20
   engine                 = "postgres"
-  engine_version         = "15.4"
+  engine_version         = "18.2"
   username               = var.db_username
   password               = var.db_password
   db_subnet_group_name   = aws_db_subnet_group.devshop_db_subnet_group.name

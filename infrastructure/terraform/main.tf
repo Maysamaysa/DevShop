@@ -5,6 +5,14 @@ provider "aws" {
 terraform {
   required_version = ">= 1.2.0"
   
+  /*
+  cloud  {
+    organization = "devshop"
+    workspaces {
+      name = "devshop"
+    }
+  }
+  */
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -13,10 +21,9 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "devshop-terraform-state-bucket"
-    key            = "devshop/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "devshop-terraform-state-lock"
-    encrypt        = true
+    bucket       = "devshop-terraform-state-bucket"
+    key          = "devshop/terraform.tfstate"
+    region       = "ap-southeast-2"
+    use_lockfile = true
   }
 }
