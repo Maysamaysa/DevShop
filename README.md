@@ -1,98 +1,68 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🛒 DevShop Microservices
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+DevShop is a high-performance, scalable e-commerce backend built with **NestJS**, designed using a **Microservices Architecture**. It features a robust observability stack, containerized deployments, and automated CI/CD pipelines.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🏗️ Architecture Overview
 
-## Description
+The project is structured as a **monorepo** managing multiple services and shared libraries:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 🚀 Applications (`apps/`)
+- **`api-gateway`**: The unified entry point. Handles request routing, rate limiting, and global metrics.
+- **`auth-service`**: Identity management with JWT and Refresh Token rotation.
+- **`order-service`**: Core business logic for handling customer orders.
+- **`notification-service`**: Asynchronous notification handling using BullMQ.
+- **`infra-service`**: System-wide infrastructure and configuration management.
 
-## Project setup
+### 📚 Shared Libraries (`libs/`)
+- **`common`**: Shared logic for security (Guards/Strategies), observability (Metrics/Tracing), and utilities.
+- **`database`**: Centralized TypeORM configuration with automated entity discovery.
 
-```bash
-$ npm install
-```
+## 🛠️ Technology Stack
 
-## Compile and run the project
+- **Framework**: [NestJS](https://nestjs.com/) (TypeScript)
+- **Database**: PostgreSQL with TypeORM
+- **Caching & Queues**: Redis & BullMQ
+- **Observability**: 
+  - **Tracing**: OpenTelemetry & Jaeger
+  - **Metrics**: Prometheus & Grafana
+  - **Logging**: Winston & Grafana Loki
+- **Infrastructure**: Terraform, Docker, and Kubernetes (Helm)
 
-```bash
-# development
-$ npm run start
+## 🚦 Getting Started
 
-# watch mode
-$ npm run start:dev
+### Prerequisites
+- Node.js (v18+)
+- Docker & Docker Compose
 
-# production mode
-$ npm run start:prod
-```
+### Local Development
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+2. **Spin up infrastructure**:
+   ```bash
+   docker-compose up -d
+   ```
+3. **Start services**:
+   ```bash
+   # Start all services in watch mode
+   npm run start:dev
+   ```
 
-## Run tests
+## 📊 Observability & Monitoring
 
-```bash
-# unit tests
-$ npm run test
+Once the infrastructure is running, you can access the following dashboards:
+- **Grafana**: `http://localhost:3004` (Password: `admin`)
+- **Jaeger (Tracing)**: `http://localhost:16686`
+- **Prometheus**: `http://localhost:9090`
+- **API Documentation**: Each service hosts Swagger docs at `[SERVICE_URL]/api/docs`
 
-# e2e tests
-$ npm run test:e2e
+## 🏗️ Infrastructure & Deployment
 
-# test coverage
-$ npm run test:cov
-```
+The project is ready for production deployment using:
+- **Terraform**: Located in `infrastructure/terraform/` for provisioning AWS resources (EKS, RDS, VPC).
+- **Helm**: Kubernetes manifests for each service in the `helm/` directory.
+- **GitHub Actions**: Automated CI/CD for testing and deployment.
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 📜 License
+DevShop is [UNLICENSED](LICENSE).
