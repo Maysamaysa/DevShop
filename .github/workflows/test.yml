@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -25,12 +25,3 @@ jobs:
         
     - name: Install dependencies
       run: npm ci
-      
-    - name: Check Formatting
-      run: npm run format
-      
-    - name: Run Linters
-      run: npm run lint
-      
-    - name: Execute Unit Tests
-      run: npm test

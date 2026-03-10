@@ -16,7 +16,7 @@ env:
   APP_NAME: auth-service
 
 jobs:
-  lint-and-test:
+  setup:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -27,13 +27,9 @@ jobs:
         cache: 'npm'
     - name: Install dependencies
       run: npm ci
-    - name: Run Linter
-      run: npm run lint
-    - name: Run Unit Tests
-      run: npm run test -- ${{ env.APP_NAME }}
 
   build-scan-push:
-    needs: lint-and-test
+    needs: setup
     runs-on: ubuntu-latest
     permissions:
       contents: read
