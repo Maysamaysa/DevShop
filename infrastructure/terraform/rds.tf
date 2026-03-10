@@ -29,7 +29,7 @@ resource "aws_security_group" "rds_sg" {
 
 resource "aws_db_instance" "devshop_postgres" {
   identifier             = "devshop-postgres"
-  instance_class         = "db.t2.micro"
+  instance_class         = "db.t3.micro"
   allocated_storage      = 20
   engine                 = "postgres"
   engine_version         = "18.2"

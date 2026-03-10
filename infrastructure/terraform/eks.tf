@@ -15,7 +15,7 @@ module "eks" {
       max_size     = 3
       desired_size = 2
 
-      instance_types = ["t2.micro"]
+      instance_types = ["t4g.micro"]
       capacity_type  = "ON_DEMAND"
 
       ami_type = "AL2_x86_64"
