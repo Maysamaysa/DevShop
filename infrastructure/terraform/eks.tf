@@ -18,7 +18,7 @@ module "eks" {
       instance_types = ["t4g.micro"]
       capacity_type  = "ON_DEMAND"
 
-      ami_type = "AL2_x86_64"
+      ami_type = "AL2_ARM_64"
     }
   }
 
